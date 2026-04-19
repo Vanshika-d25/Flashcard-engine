@@ -10,16 +10,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ API FIRST
+// ✅ API first
 app.use("/api/flashcards", flashcardRoutes);
 
-// ✅ Serve frontend
+// ✅ STATIC (important)
 app.use(express.static(path.join(__dirname, "dist")));
 
-// ❌ REMOVE app.get("/*")
+// ✅ CATCH-ALL ONLY FOR NON-API
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
 
-// ✅ Catch-all (FIX)
-app.use((req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
