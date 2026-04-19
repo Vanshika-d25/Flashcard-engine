@@ -1,24 +1,32 @@
-const fs = require("fs");
-const pdfParse = require("pdf-parse");
-
-const extractTextFromPDF = async (filePath) => {
+router.post("/upload", upload.single("pdf"), async (req, res) => {
   try {
-    console.log("Reading file:", filePath);
+    console.log("📥 Upload request received");
 
-    if (!fs.existsSync(filePath)) {
-      throw new Error("File not found");
+    if (!req.file) {
+      console.log("❌ No file received");
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdfParse(dataBuffer);
+    console.log("📄 File:", req.file);
 
-    console.log("PDF parsed successfully");
+    const filePath = req.file.path;
 
-    return data.text;
+    console.log("📂 Path:", filePath);
+
+    const text = await extractTextFromPDF(filePath);
+
+    console.log("🧠 Extracted text length:", text.length);
+
+    const flashcards = await generateFlashcards(
+      text.substring(0, 3000)
+    );
+
+    console.log("✅ Flashcards generated");
+
+    res.json({ flashcards });
+
   } catch (error) {
-    console.error("PDF parsing error FULL:", error);
-    throw error;
+    console.error("🔥 FULL ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
-};
-
-module.exports = { extractTextFromPDF };
+});
