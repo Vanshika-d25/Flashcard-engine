@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.DEV
+    ? "http://localhost:5000/api"  
+    : "/api",              
 });
 
 export const uploadPDF = (formData) =>
-  API.post("/flashcards/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  API.post("/flashcards/upload", formData);

@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const path = require("path");
+
 const flashcardRoutes = require("./routes/flashcardRoutes");
 
 const app = express();
@@ -8,11 +10,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
+// ✅ API FIRST
 app.use("/api/flashcards", flashcardRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Flashcard Engine Backend Running 🚀");
+// ✅ Serve frontend
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ❌ REMOVE app.get("/*")
+
+// ✅ Catch-all (FIX)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
